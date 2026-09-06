@@ -1,3 +1,5 @@
+from flask import request
+
 HIGH = 70
 MEDIUM = 40
 
