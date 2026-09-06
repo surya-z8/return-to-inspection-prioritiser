@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Return-to-Inspection Prioritiser</title>
+<style>
+body{font-family:Arial,sans-serif;margin:30px;background:#f6f8fb;color:#1f2d3d}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #0001}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left}
+.badge{padding:4px 8px;border-radius:10px;font-weight:bold}button{padding:9px 14px;border:0;border-radius:8px;cursor:pointer}
+.muted{color:#667085}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Return-to-Inspection Prioritiser</h1>
+<p class="muted">Prioritises returned reusable containers using value-loss and condition risk.</p>
+<button onclick="loadData()">Refresh</button>
+</div>
+<div class="card">
+<h2>Prioritised returns</h2>
+<table><thead><tr>
+<th>Return ID</th><th>Value</th><th>Transit days</th><th>Condition</th><th>Score</th><th>Priority</th><th>Fallback</th>
+</tr></thead><tbody id="rows"></tbody></table>
+</div>
+<div class="card"><h2>Evidence for high-priority outputs</h2><div id="evidence"></div></div>
+<script>
+async function loadData(){
+ const data=await fetch('/api/returns').then(r=>r.json());
+ document.getElementById('rows').innerHTML=data.map(x=>`
+ <tr><td>${x.return_id}</td><td>$${Number(x.product_value).toFixed(0)}</td>
+ <td>${x.transit_days}</td><td>${x.condition_hint}</td><td>${x.priority_score}</td>
+ <td><span class="badge">${x.priority}</span></td>
+ <td>${x.manual_review?'Manual review':'Normal'}</td></tr>`).join('');
+ document.getElementById('evidence').innerHTML=data.filter(x=>x.priority==='HIGH').map(x=>`
+ <div><b>${x.return_id}</b> — score ${x.priority_score}<ul>
+ ${x.evidence.map(e=>`<li>${e}</li>`).join('')}</ul></div>`).join('') || '<p>No high-priority returns.</p>';
+}
+loadData();
+</script>
+</body>
+</html>

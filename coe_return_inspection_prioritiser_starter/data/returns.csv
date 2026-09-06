@@ -1,0 +1,11 @@
+return_id,return_request_date,transit_days,product_value,condition_hint,inspection_outcome,sensor_available,location_available
+R001,2026-09-01,2,120,good,pass,yes,yes
+R002,2026-08-28,8,450,minor_damage,repair,yes,yes
+R003,2026-08-20,15,600,damaged,repair,no,yes
+R004,2026-09-02,1,80,excellent,pass,yes,yes
+R005,2026-08-25,10,300,wet,clean,yes,no
+R006,2026-08-30,6,220,unknown,pending,yes,yes
+R007,2026-08-18,18,500,contaminated,discard,no,no
+R008,2026-09-03,1,40,good,pass,yes,yes
+R009,2026-08-29,7,380,damaged,repair,yes,yes
+R010,2026-08-27,11,150,minor_damage,repair,yes,yes
