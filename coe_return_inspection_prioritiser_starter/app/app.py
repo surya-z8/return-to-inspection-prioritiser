@@ -3,7 +3,6 @@ import csv
 from pathlib import Path
 from app.scoring import prioritise
 from app.experiment import run_experiment
-
 app = Flask(__name__)
 BASE = Path(__file__).resolve().parent.parent
 DATA = BASE / "data" / "returns.csv"
