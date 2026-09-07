@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, render_template, request
 import csv
 from pathlib import Path
-from scoring import prioritise
-from experiment import run_experiment
+from app.scoring import prioritise
+from app.experiment import run_experiment
 
 app = Flask(__name__)
 BASE = Path(__file__).resolve().parent.parent
