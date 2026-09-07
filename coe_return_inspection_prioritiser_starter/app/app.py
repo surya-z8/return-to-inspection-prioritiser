@@ -11,6 +11,23 @@ def load_records():
     with open(DATA, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
+def save_record(record):
+    fieldnames = [
+        "return_id",
+        "return_request_date",
+        "transit_days",
+        "product_value",
+        "condition_hint",
+        "inspection_outcome",
+        "sensor_available",
+        "location_available",
+    ]
+
+    with open(DATA, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writerow(record)
+        
+
 @app.get("/")
 def index():
     return render_template("index.html")
