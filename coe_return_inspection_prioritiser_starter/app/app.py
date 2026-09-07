@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 import csv
 from pathlib import Path
 from scoring import prioritise
+from experiment import run_experiment
 
 app = Flask(__name__)
 BASE = Path(__file__).resolve().parent.parent
@@ -22,6 +23,10 @@ def returns():
 @app.post("/api/score")
 def score_one():
     return jsonify(prioritise([request.get_json(force=True)])[0])
+
+@app.get("/api/experiment")
+def experiment():
+    return jsonify(run_experiment(load_records()))
 
 if __name__ == "__main__":
     app.run(debug=True)
