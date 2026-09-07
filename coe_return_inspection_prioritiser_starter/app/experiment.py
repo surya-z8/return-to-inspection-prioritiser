@@ -1,5 +1,4 @@
-from scoring import prioritise
-
+from app.scoring import prioritise
 
 CONDITION_LOSS_RATE = {
     "excellent": 0.01,
