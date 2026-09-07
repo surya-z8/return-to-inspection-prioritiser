@@ -16,6 +16,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <h1>Return-to-Inspection Prioritiser</h1>
 <p class="muted">Prioritises returned reusable containers using value-loss and condition risk.</p>
 <button onclick="loadData()">Refresh</button>
+ <button onclick="loadExperiment()">Run FIFO vs Priority Experiment</button>
+<div id="experiment-result"></div>
 </div>
 <div class="card">
 <h2>Prioritised returns</h2>
@@ -35,6 +37,40 @@ async function loadData(){
  document.getElementById('evidence').innerHTML=data.filter(x=>x.priority==='HIGH').map(x=>`
  <div><b>${x.return_id}</b> — score ${x.priority_score}<ul>
  ${x.evidence.map(e=>`<li>${e}</li>`).join('')}</ul></div>`).join('') || '<p>No high-priority returns.</p>';
+}
+ async function loadExperiment() {
+    const response = await fetch("/api/experiment");
+    const result = await response.json();
+
+    document.getElementById("experiment-result").innerHTML = `
+        <h2>FIFO vs Priority Experiment</h2>
+
+        <p>
+            <strong>FIFO Value Preserved:</strong>
+            ${result.fifo.total_value_preserved}
+        </p>
+
+        <p>
+            <strong>Priority Value Preserved:</strong>
+            ${result.priority.total_value_preserved}
+        </p>
+
+        <p>
+            <strong>Improvement:</strong>
+            ${result.improvement}
+        </p>
+
+        <p>
+            <strong>Improvement %:</strong>
+            ${result.improvement_percent}%
+        </p>
+
+        <h3>FIFO Inspection Order</h3>
+        <p>${result.fifo.inspection_order.join(" → ")}</p>
+
+        <h3>Priority Inspection Order</h3>
+        <p>${result.priority.inspection_order.join(" → ")}</p>
+    `;
 }
 loadData();
 </script>
