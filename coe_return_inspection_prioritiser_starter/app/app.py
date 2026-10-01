@@ -1,16 +1,22 @@
 from flask import Flask, jsonify, render_template, request
 import csv
 from pathlib import Path
+
 from app.scoring import prioritise
-from app.experiment import run_experiment
+from app.experiment import run_experiment, calculate_error_analysis
+
+
 app = Flask(__name__)
+
 BASE = Path(__file__).resolve().parent.parent
 DATA = BASE / "data" / "returns.csv"
+
 
 def load_records():
     with open(DATA, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
+<<<<<<< HEAD
 def save_record(record):
     fieldnames = [
         "return_id",
@@ -27,10 +33,13 @@ def save_record(record):
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writerow(record)
         
+=======
+>>>>>>> 03099ff (Improve value decay and add error analysis)
 
 @app.get("/")
 def index():
     return render_template("index.html")
+
 
 @app.get("/api/returns")
 def returns():
@@ -63,11 +72,25 @@ def add_return():
 
 @app.post("/api/score")
 def score_one():
-    return jsonify(prioritise([request.get_json(force=True)])[0])
+    return jsonify(
+        prioritise(
+            [request.get_json(force=True)]
+        )[0]
+    )
+
 
 @app.get("/api/experiment")
 def experiment():
-    return jsonify(run_experiment(load_records()))
+    records = load_records()
+
+    result = run_experiment(records)
+
+    result["error_analysis"] = calculate_error_analysis(
+        records
+    )
+
+    return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
