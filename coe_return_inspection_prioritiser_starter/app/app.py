@@ -16,7 +16,6 @@ def load_records():
     with open(DATA, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
-<<<<<<< HEAD
 def save_record(record):
     fieldnames = [
         "return_id",
@@ -32,9 +31,6 @@ def save_record(record):
     with open(DATA, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writerow(record)
-        
-=======
->>>>>>> 03099ff (Improve value decay and add error analysis)
 
 @app.get("/")
 def index():
