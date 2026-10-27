@@ -1,4 +1,4 @@
-# Return-to-Inspection Prioritiser
+ipo# Return-to-Inspection Prioritiser
 
 A working prototype for prioritising returned reusable-packaging containers for inspection based on expected resale value loss, transit delay, product-condition risk, and data availability.
 
@@ -121,3 +121,102 @@ Run tests with:
 
 ```bash
 pytest -q
+```
+API Documentation
+
+The application uses Flask to provide REST API endpoints for return prioritisation and experiment evaluation.
+
+1. GET /api/returns
+
+Purpose: Retrieves all return records and their calculated priority information.
+
+Response: A JSON array containing return details, priority scores, priority labels, evidence, and manual-review indicators.
+
+2. POST /api/returns
+
+Purpose: Accepts a new return record, validates the presence of required fields, saves the record to the CSV dataset, and returns its calculated priority.
+
+Required fields:
+
+* return_id
+* return_request_date
+* transit_days
+* product_value
+* condition_hint
+* inspection_outcome
+* sensor_available
+* location_available
+
+Success response: HTTP 201 Created, with the scored return record.
+
+Error response: HTTP 400 Bad Request if a required field is missing.
+
+3. POST /api/score
+
+Purpose: Calculates the priority of a single return record without saving it to the dataset.
+
+Response: A JSON object containing the calculated priority and supporting evidence.
+
+4. GET /api/experiment
+
+Purpose: Runs the FIFO-versus-priority experiment and returns estimated value preservation and error-analysis metrics.
+
+Response includes:
+
+* FIFO value preserved
+* Priority value preserved
+* Absolute and percentage improvement
+* True positives, false positives, false negatives, and true negatives
+* Precision and recall
+
+Data Storage and Schema
+
+Return Dataset — data/returns.csv
+
+The application stores return records in a CSV file.
+
+Field	Description
+return_id	Unique identifier for the return
+return_request_date	Date the return was requested
+transit_days	Transit or waiting duration in days
+product_value	Estimated value of the returned container
+condition_hint	Reported condition of the container
+inspection_outcome	Inspection result or pending status
+sensor_available	Indicates whether sensor data is available
+location_available	Indicates whether location data is available
+
+Offline Queue — data/store_forward.db
+
+The SQLite database contains a return_queue table.
+
+Column	Description
+id	Auto-incrementing internal identifier
+return_id	Unique return identifier
+payload	JSON representation of the return record
+status	Queue state: queued or processed
+
+The queue supports local storage, retrieval, processing, and status checks through app/store_forward.py. These queue operations are currently implemented as Python functions, not Flask API endpoints.
+
+Unit Testing and Error Boundaries
+
+The project uses pytest for automated testing.
+
+The current test suite covers:
+
+* Priority scoring behaviour
+* Experiment calculations and value-decay estimation
+* FIFO and priority-based inspection comparisons
+* SQLite store-and-forward queue operations
+
+The most recent recorded test run completed with 8 passing tests.
+
+Error Handling
+
+* Missing required fields in POST /api/returns produce an HTTP 400 response.
+* Invalid product-value or transit-time inputs are handled by the scoring logic with manual-review indicators.
+* Unavailable sensor or location information triggers fallback evidence and manual review.
+* Offline return records can be placed in the SQLite queue for later processing.
+
+Current Limitations
+
+The current prototype uses a synthetic dataset. Value-decay rates and prioritisation thresholds require validation using representative operational data. Additional tests should cover malformed JSON, duplicate return identifiers, CSV write failures, and database errors.
